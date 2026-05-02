@@ -1,0 +1,14 @@
+[project]
+name = "semantic-foundry"
+version = "0.1.0"
+description = "Semantic_Foundry MVP scaffold for deterministic semantic package generation."
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = []
+
+[project.scripts]
+semantic-foundry = "semantic_foundry.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"

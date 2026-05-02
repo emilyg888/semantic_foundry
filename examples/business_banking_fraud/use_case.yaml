@@ -1,0 +1,48 @@
+use_case:
+  use_case_id: business_banking_fraud_detection
+  business_objective: Detect suspicious SME banking transactions and explain contributing signals.
+  primary_users:
+    - fraud analyst
+    - financial crime operations
+    - risk manager
+    - data scientist
+  business_questions:
+    - Which transactions are suspicious?
+    - Why was a transaction flagged?
+    - Which accounts show burst behaviour?
+    - Which customer segments carry higher fraud signal exposure?
+    - Which rules contribute most to alerts?
+  decision_type: analyst_assisted
+  automation_level: human_in_the_loop
+  risk_level: high
+  in_scope_entities:
+    - customer
+    - account
+    - merchant
+    - transaction
+  in_scope_signals:
+    - abs_amount
+    - txn_count
+    - same_ts_count
+    - z_score
+    - account_zscore
+    - is_burst
+    - account_had_burst
+    - is_spike
+    - is_velocity
+    - is_anomaly
+    - predicted_fraud
+    - fraud_score
+  owners:
+    customer: Head of Business Banking
+    account: Head of Business Banking
+    merchant: Fraud Operations Lead
+    transaction: Fraud Operations Lead
+    fraud_signal: Fraud Risk Owner
+    fraud_alert: Fraud Operations Lead
+    fraud_score: Fraud Analytics Lead
+  source_dataset_names:
+    - customers
+    - accounts
+    - transactions
+  target: generic_sql
