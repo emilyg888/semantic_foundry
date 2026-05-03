@@ -44,5 +44,6 @@ use_case:
   source_dataset_names:
     - customers
     - accounts
+    - merchants
     - transactions
   target: generic_sql

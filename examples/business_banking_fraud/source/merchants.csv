@@ -1,0 +1,4 @@
+merchant_id,merchant_name,merchant_category,merchant_risk_rating
+M001,Northwind Supplies,office_supplies,low
+M002,Global Freight,logistics,medium
+M003,Night Market Electronics,electronics,high

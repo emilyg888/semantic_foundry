@@ -102,6 +102,16 @@ REFERENCE_ENTITIES = [
         "certification_status": "candidate",
     },
     {
+        "entity_id": "certified_fraud_alert",
+        "name": "fraud_alert",
+        "definition": "Fraud alert entity representing suspicious transactions flagged for analyst review.",
+        "grain": "one row per flagged transaction event",
+        "primary_key": "alert_id",
+        "owner": "Fraud Operations Lead",
+        "source_table": "transactions::predicted_fraud",
+        "certification_status": "candidate",
+    },
+    {
         "entity_id": "certified_merchant",
         "name": "merchant",
         "definition": "Merchant or counterparty entity used to analyse fraud concentration and merchant risk patterns.",
@@ -158,6 +168,13 @@ REFERENCE_RELATIONSHIPS = [
         "relationship": "transacts_with",
         "join_keys": ["merchant_id"],
         "cardinality": "many_to_many",
+    },
+    {
+        "from_entity": "certified_transaction",
+        "to_entity": "certified_fraud_alert",
+        "relationship": "may_generate",
+        "join_keys": ["txn_id"],
+        "cardinality": "one_to_zero_or_many",
     },
 ]
 
@@ -338,6 +355,13 @@ REFERENCE_DQ_RULES = [
 ]
 
 REFERENCE_POLICIES = [
+    {
+        "policy_id": "policy_human_review_required",
+        "asset": "certified_fraud_alert",
+        "classification": "restricted",
+        "approved_use": "Analyst review, fraud triage, model monitoring",
+        "disallowed_use": "Automated adverse action without analyst approval or human review",
+    },
     {
         "policy_id": "policy_transaction_restricted",
         "asset": "certified_transaction",

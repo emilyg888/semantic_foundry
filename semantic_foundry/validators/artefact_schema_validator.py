@@ -9,7 +9,10 @@ REQUIRED_KEYS = {
     "signals": ("use_case_id", "signals"),
     "predictions": ("use_case_id", "predictions"),
     "dq_rules": ("use_case_id", "dq_rules"),
+    "dq_validation": ("use_case_id", "dq_validation"),
     "policies": ("use_case_id", "policies"),
+    "policy_validation": ("use_case_id", "policy_validation"),
+    "sql_validation": ("sql_validation",),
     "ai_context_cards": ("use_case_id", "ai_context_cards"),
     "semantic_manifest": ("run",),
 }

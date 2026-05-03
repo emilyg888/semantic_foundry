@@ -46,13 +46,18 @@ class CliSitTests(unittest.TestCase):
         )
         output_dir = Path(build.stdout.strip())
         self.assertTrue(output_dir.exists())
+        self.assertTrue((output_dir / "README.md").exists())
         self.assertTrue((output_dir / "01_semantic_catalogue" / "glossary.yaml").exists())
         self.assertTrue((output_dir / "03_prediction_catalogue" / "predictions.yaml").exists())
         self.assertTrue((output_dir / "04_evaluation_metric_catalogue" / "metrics.yaml").exists())
+        self.assertTrue((output_dir / "05_governance_controls" / "dq_validation.yaml").exists())
+        self.assertTrue((output_dir / "05_governance_controls" / "policy_validation.yaml").exists())
 
         certify = self.run_cli("certify", "--package", str(output_dir))
         self.assertIn('"certification_report_present": true', certify.stdout)
         self.assertIn('"semantic_manifest_present": true', certify.stdout)
+        self.assertIn('"certification_result": "not_certifiable"', certify.stdout)
+        self.assertIn('"validation_status": "passed"', certify.stdout)
 
     def run_cli(self, *args: str) -> subprocess.CompletedProcess[str]:
         return subprocess.run(

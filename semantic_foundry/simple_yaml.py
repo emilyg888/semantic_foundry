@@ -69,7 +69,7 @@ def parse_block(lines: list[str], start: int, indent: int) -> tuple[Any, int]:
     if current_indent != indent:
         raise ValueError(f"Invalid indentation at line: {lines[start]}")
 
-    if lines[start].lstrip().startswith("- "):
+    if is_list_marker(lines[start]):
         return parse_list(lines, start, indent)
     return parse_mapping(lines, start, indent)
 
@@ -85,7 +85,7 @@ def parse_mapping(lines: list[str], start: int, indent: int) -> tuple[dict[str, 
         if current_indent > indent:
             raise ValueError(f"Unexpected indentation at line: {raw}")
         stripped = raw.strip()
-        if stripped.startswith("- "):
+        if is_list_marker(stripped):
             break
         key, _, remainder = stripped.partition(":")
         if not _:
@@ -115,9 +115,9 @@ def parse_list(lines: list[str], start: int, indent: int) -> tuple[list[Any], in
         if current_indent != indent:
             raise ValueError(f"Unexpected indentation at line: {raw}")
         stripped = raw.strip()
-        if not stripped.startswith("- "):
+        if not is_list_marker(stripped):
             break
-        remainder = stripped[2:].strip()
+        remainder = stripped[1:].strip()
         index += 1
         if remainder:
             result.append(parse_scalar(remainder))
@@ -149,3 +149,8 @@ def parse_scalar(token: str) -> Any:
 
 def line_indent(line: str) -> int:
     return len(line) - len(line.lstrip(" "))
+
+
+def is_list_marker(line: str) -> bool:
+    stripped = line.lstrip() if line != line.lstrip() else line
+    return stripped == "-" or stripped.startswith("- ")

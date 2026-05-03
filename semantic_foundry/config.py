@@ -33,6 +33,7 @@ class SourceFile:
     path: str
     category: str
     suffix: str
+    role: str | None = None
 
 
 @dataclass(slots=True)

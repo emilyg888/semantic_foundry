@@ -14,6 +14,8 @@ def build_semantic_manifest(
     generated_assets: list[str],
     source_path: Path,
     use_case_path: Path,
+    validation_status: str,
+    certification_status: str,
 ) -> dict[str, object]:
     return {
         "run": {
@@ -24,8 +26,8 @@ def build_semantic_manifest(
             "llm_model": None,
             "generation_mode": "build",
             "generated_assets": generated_assets,
-            "validation_status": "passed",
-            "certification_status": "candidate",
+            "validation_status": validation_status,
+            "certification_status": certification_status,
             "inventory_counts": inventory.counts_by_category,
         }
     }

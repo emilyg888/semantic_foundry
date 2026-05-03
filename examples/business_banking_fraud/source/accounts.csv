@@ -1,0 +1,4 @@
+account_id,customer_id,account_name,account_status
+ACC001,CUST001,Operating Account,active
+ACC002,CUST002,Collections Account,active
+ACC003,CUST003,Payroll Account,active

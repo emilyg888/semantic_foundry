@@ -12,7 +12,10 @@ def make_valid_artefacts() -> dict[str, object]:
         "signals": {"use_case_id": "uc1", "signals": [1, 2, 3]},
         "predictions": {"use_case_id": "uc1", "predictions": [1, 2]},
         "dq_rules": {"use_case_id": "uc1", "dq_rules": [1, 2, 3]},
+        "dq_validation": {"use_case_id": "uc1", "dq_validation": {"status": "passed", "checks": []}},
         "policies": {"use_case_id": "uc1", "policies": [1]},
+        "policy_validation": {"use_case_id": "uc1", "policy_validation": {"status": "passed", "checks": []}},
+        "sql_validation": {"sql_validation": {"status": "passed", "validated_views": [], "checks": []}},
         "ai_context_cards": {"use_case_id": "uc1", "ai_context_cards": [1]},
         "semantic_manifest": {"run": {"run_id": "abc"}},
     }

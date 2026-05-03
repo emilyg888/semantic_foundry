@@ -49,6 +49,19 @@ python main.py certify --package outputs/business_banking_fraud_detection
 The MVP build produces:
 
 ```text
+package_manifest.yaml
+use_case.yaml
+discovery_report.json
+semantic_catalogue.yaml
+signal_catalogue.yaml
+metric_catalogue.yaml
+dq_rules.yaml
+policy_rules.yaml
+lineage.yaml
+semantic_views.sql
+ai_context_cards.yaml
+evaluation_questions.yaml
+certification_report.md
 01_semantic_catalogue/
   glossary.yaml
   entities.yaml
@@ -61,7 +74,9 @@ The MVP build produces:
   metrics.yaml
 05_governance_controls/
   dq_rules.yaml
+  dq_validation.yaml
   policies.yaml
+  policy_validation.yaml
   issue_register.yaml
 06_ai_consumption/
   ai_context_cards.yaml
@@ -81,3 +96,32 @@ Current test split:
 
 - Unit tests cover source inventory, Python AST logic mining, YAML/loading, and artefact validation.
 - SIT covers the CLI-level `discover -> build -> certify` workflow against the fraud fixture.
+
+## Review Cockpit
+
+The repo now includes a lightweight Streamlit review cockpit that loads a built package for:
+
+- asset review and approval
+- owner updates
+- issue capture and resolution
+- package publish with refreshed certification artefacts
+
+Install the optional review dependency and run:
+
+```bash
+python -m pip install -e .[review]
+streamlit run review_cockpit.py
+```
+
+By default the cockpit opens:
+
+```text
+outputs/business_banking_fraud_detection
+```
+
+It refreshes:
+
+- `07_delivery_pack/certification_report.md`
+- `07_delivery_pack/semantic_manifest.yaml`
+- `05_governance_controls/review_approvals.yaml`
+- `07_delivery_pack/publish_log.yaml`

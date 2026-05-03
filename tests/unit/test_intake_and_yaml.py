@@ -34,6 +34,22 @@ class SimpleYamlTests(unittest.TestCase):
 
         self.assertEqual(loaded["use_case"]["use_case_id"], "fraud_case")
 
+    def test_round_trips_list_of_mappings(self) -> None:
+        payload = {
+            "checks": [
+                {"rule_id": "dq_transactions_primary_key", "status": "passed"},
+                {"rule_id": "dq_transactions_account_fk", "status": "passed"},
+            ]
+        }
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            path = Path(tmp_dir) / "checks.yaml"
+            path.write_text(dump_yaml(payload) + "\n", encoding="utf-8")
+
+            loaded = load_simple_yaml(path)
+
+        self.assertEqual(loaded, payload)
+
 
 class IntakeLoaderTests(unittest.TestCase):
     def test_load_use_case_parses_example_fixture(self) -> None:

@@ -12,6 +12,9 @@ class SourceInventoryTests(unittest.TestCase):
         categories = inventory.counts_by_category
         self.assertEqual(categories["python"], 2)
         self.assertIn("fraud/features.py", [item.path for item in inventory.files])
+        roles_by_path = {item.path: item.role for item in inventory.files}
+        self.assertEqual(roles_by_path["fraud/features.py"], "feature_engineering")
+        self.assertEqual(roles_by_path["fraud/detector.py"], "fraud_detector")
 
 
 if __name__ == "__main__":

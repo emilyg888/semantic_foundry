@@ -1,0 +1,4 @@
+customer_id,customer_name,country,risk_rating
+CUST001,Acme Pty Ltd,AU,medium
+CUST002,Harbour Trading,AU,high
+CUST003,Southern Logistics,NZ,low

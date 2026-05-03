@@ -1,44 +1,68 @@
 from __future__ import annotations
 
-from semantic_foundry.config import UseCase
+from semantic_foundry.validators.certification_validator import CertificationGateReport
 
 
-def build_certification_report(use_case: UseCase) -> str:
+def build_certification_report(use_case_id: str, gate: CertificationGateReport) -> str:
+    requirement_rows = "\n".join(
+        f"| {requirement.name} | {'Passed' if requirement.passed else 'Pending'} | {requirement.detail} |"
+        for requirement in gate.requirements
+    )
+    blocker_lines = "\n".join(
+        f"{index}. {blocker}" for index, blocker in enumerate(gate.blockers, start=1)
+    ) or "1. No blocking issues detected."
+    next_action_lines = "\n".join(
+        f"{index}. {action}" for index, action in enumerate(recommended_next_actions(gate), start=1)
+    )
+    asset_stage_rows = "\n".join(
+        f"| {stage} | {count} |" for stage, count in sorted(gate.asset_stage_counts.items())
+    )
     return f"""# Semantic_Foundry Certification Report
 
 ## Use Case
-{use_case.use_case_id}
+{use_case_id}
 
-## Generated Semantic Assets
-- certified_business_customer
-- certified_business_account
-- certified_merchant
-- certified_fraud_model_run
-- certified_transaction
-- certified_transaction_fraud_signal
-- certified_fraud_alert
+## Certification Result
+- Result: `{gate.result}`
+- Validation status: `{gate.validation_status}`
 
-## Certification Summary
-| Asset | Status | Reason |
+## Requirement Summary
+| Requirement | Status | Detail |
 |---|---|---|
-| certified_business_customer | Draft | Business owner confirmation required |
-| certified_business_account | Candidate | Relationship and DQ rules drafted |
-| certified_merchant | Draft | Merchant semantic definition and ownership require review |
-| certified_fraud_model_run | Draft | Evaluation-run semantics and aggregated inputs require review |
-| certified_transaction | Candidate | Transaction DQ rules generated |
-| certified_transaction_fraud_signal | Candidate | Signal thresholds require approval |
-| certified_fraud_alert | Candidate | Human review policy required |
+{requirement_rows}
+
+## Asset Stage Counts
+| Stage | Count |
+|---|---|
+{asset_stage_rows}
 
 ## Blocking Issues
-1. Synthetic fraud labels are not production-confirmed outcomes.
-2. Spike and velocity thresholds require Fraud Risk Owner approval.
-3. Account-level burst signal may inflate false positives.
-4. Restricted transaction access policy must be implemented.
+{blocker_lines}
 
 ## Recommended Next Actions
-1. Confirm business definitions with Fraud Risk and Operations.
-2. Validate thresholds using production historical data.
-3. Implement RBAC for transaction-level semantic views.
-4. Run DQ checks on real warehouse tables.
-5. Pilot AI copilot against certified-only views.
+{next_action_lines}
 """
+
+
+def recommended_next_actions(gate: CertificationGateReport) -> list[str]:
+    actions: list[str] = []
+    for requirement in gate.requirements:
+        if requirement.passed:
+            continue
+        if requirement.name == "business_definition_approved":
+            actions.append("Promote glossary and entity definitions from draft to candidate through business review.")
+        elif requirement.name == "threshold_approved":
+            actions.append("Approve draft and experimental metrics, signals, and predictions with Fraud Analytics and Risk.")
+        elif requirement.name == "owner_assigned":
+            actions.append("Assign owners to every semantic asset before certification review.")
+        elif requirement.name == "dq_rules_passed":
+            actions.append("Resolve blocking DQ issues and rerun deterministic validation.")
+        elif requirement.name == "policy_rules_defined":
+            actions.append("Close policy gaps and rerun policy validation.")
+        elif requirement.name == "ai_context_card_created":
+            actions.append("Create AI context cards with allowed and disallowed usage guidance.")
+    if gate.blockers:
+        actions.append("Resolve blocking issues in the issue register before requesting certification.")
+    if not actions:
+        actions.append("Package is ready to advance to the next review stage.")
+    return actions

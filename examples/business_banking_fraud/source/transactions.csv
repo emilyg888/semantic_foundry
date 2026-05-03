@@ -1,0 +1,4 @@
+txn_id,account_id,merchant_id,timestamp,amount,transaction_type,merchant_category,merchant_risk_rating,fraud_label
+TXN001,ACC001,M001,2026-04-01T09:15:00+10:00,4200.5,card_present,office_supplies,low,false
+TXN002,ACC002,M002,2026-04-01T09:16:00+10:00,18000.0,wire,logistics,medium,true
+TXN003,ACC003,M003,2026-04-01T09:17:00+10:00,7600.25,card_not_present,electronics,high,false

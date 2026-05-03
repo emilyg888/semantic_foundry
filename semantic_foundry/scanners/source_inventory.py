@@ -33,6 +33,22 @@ def build_source_inventory(root: Path) -> InventorySummary:
                 path=str(path.relative_to(root)),
                 category=category,
                 suffix=suffix or "<none>",
+                role=infer_role(path.relative_to(root).as_posix()),
             )
         )
     return InventorySummary(root=str(root), files=files)
+
+
+def infer_role(relative_path: str) -> str | None:
+    role_by_suffix_path = {
+        "fraud/features.py": "feature_engineering",
+        "fraud/detector.py": "fraud_detector",
+        "fraud/run_fraud.py": "evaluation_runner",
+        "fraud/load.py": "data_enrichment",
+        "datasets/generator.py": "synthetic_data_generator",
+        "datasets/generator_v2.py": "synthetic_data_generator",
+        "datasets/generator_v3.py": "synthetic_data_generator",
+        "datasets/schema.py": "schema_validation",
+        "datasets/validator.py": "dq_validation",
+    }
+    return role_by_suffix_path.get(relative_path)
