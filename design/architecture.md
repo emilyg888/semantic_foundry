@@ -2,9 +2,17 @@
 
 ## 1. Purpose
 
-Semantic_Foundry builds a governed semantic package from a business use case, source code, and sample data.
+Semantic_Foundry is a reusable consulting accelerator for building a governed semantic package from a business use case, source code, and sample data.
 
-The current repository is centered on the `business_banking_fraud_detection` example and is intended to support:
+At a framework level, it is intended to help enterprises make data AI-ready by introducing:
+
+- certified business meaning
+- governed semantic assets
+- deterministic validation
+- review and certification workflow
+- safe AI consumption boundaries
+
+The current repository is centered on the `business_banking_fraud_detection` example and supports:
 
 - semantic package generation
 - deterministic validation
@@ -12,7 +20,27 @@ The current repository is centered on the `business_banking_fraud_detection` exa
 - reviewer approval workflow
 - local review and publish through a Streamlit cockpit
 
-## 2. Current System Shape
+## 2. Conceptual Framework
+
+The semantic layer is not just a BI convenience layer. In this project it acts as the trusted interpretation layer between raw enterprise data and downstream AI or analytics consumers.
+
+```text
+Raw / Integrated Data
+        ↓
+Data Quality + Lineage + Governance Controls
+        ↓
+Certified Business Concepts
+        ↓
+Enterprise Semantic Layer
+        ↓
+BI, Analytics, ML Features, RAG, AI Copilots, Agents
+```
+
+The core principle is:
+
+> AI systems should reason over certified business concepts and governed semantic assets, not directly over raw enterprise tables.
+
+## 3. Current System Shape
 
 This is a Python project with a CLI-first build pipeline and a Streamlit review UI.
 
@@ -23,7 +51,65 @@ The repository has two main operating modes:
 
 Generated semantic packages are written to `outputs/<use_case_id>/`.
 
-## 3. Component Map
+## 4. Reference Architecture
+
+```text
+┌──────────────────────────────────────────────────────────────┐
+│                    Enterprise AI Consumers                    │
+│                                                              │
+│  BI Dashboards │ Analyst SQL │ ML Features │ RAG │ Copilots │
+└──────────────────────────────────────────────────────────────┘
+                              ▲
+                              │
+┌──────────────────────────────────────────────────────────────┐
+│                  Enterprise Semantic Layer                    │
+│                                                              │
+│  Business Entities  │ Metrics │ Dimensions │ Relationships   │
+│  Glossary Terms     │ Rules   │ Policies   │ Certified Views │
+└──────────────────────────────────────────────────────────────┘
+                              ▲
+                              │
+┌──────────────────────────────────────────────────────────────┐
+│              Governance + AI Readiness Control Layer          │
+│                                                              │
+│  Data Quality │ Lineage │ Ownership │ Classification │ RBAC  │
+│  Certification │ Usage Policy │ Auditability │ Evaluation     │
+└──────────────────────────────────────────────────────────────┘
+                              ▲
+                              │
+┌──────────────────────────────────────────────────────────────┐
+│                Existing Data Platform Foundation              │
+│                                                              │
+│  Warehouse │ Lakehouse │ Lake │ Marts │ APIs │ Data Products │
+└──────────────────────────────────────────────────────────────┘
+```
+
+## 5. Framework Layers
+
+The project is designed around these architectural layers:
+
+1. Domain discovery layer
+Context gathering around business concepts, use cases, stakeholders, and candidate source assets.
+
+2. Business glossary layer
+Definitions, synonyms, ownership, sensitivity, and certification state for business terms.
+
+3. Logical business entity layer
+Pragmatic semantic entities such as customer, account, transaction, fraud alert, merchant, and model run.
+
+4. Metric and KPI layer
+Deterministic metric contracts with grain, formula, interpretation, and caveats.
+
+5. Semantic view layer
+Generated SQL and semantic assets that expose governed business-aligned structures.
+
+6. Governance control layer
+DQ rules, policy rules, ownership, certification gates, auditability, and issue tracking.
+
+7. AI consumption layer
+AI context cards, allowed and disallowed usage, refusal rules, safe joins, and sensitive field handling.
+
+## 6. Component Map
 
 | Component | Path | Responsibility | Key dependencies |
 |---|---|---|---|
@@ -40,7 +126,7 @@ Generated semantic packages are written to `outputs/<use_case_id>/`.
 | Example fixture | `examples/business_banking_fraud/` | Use case, sample CSVs, and fraud logic inputs | build/test commands |
 | Tests | `tests/unit/`, `tests/integration/` | Unit and SIT coverage | `unittest`, build/CLI runtime |
 
-## 4. Runtime Flow
+## 7. Runtime Flow
 
 ```text
 Use case YAML + source files + sample CSVs
@@ -63,7 +149,7 @@ Package publish to outputs/<use_case_id>/
 Optional review cockpit updates approvals/issues and republishes delivery artefacts
 ```
 
-## 5. Data Flow
+## 8. Data Flow
 
 Primary data movement:
 
@@ -84,7 +170,7 @@ Review cockpit flow:
 - rewrites certification report and semantic manifest
 - appends review approvals and publish log entries
 
-## 6. Configuration
+## 9. Configuration
 
 Repository configuration sources:
 
@@ -98,14 +184,14 @@ Local environment expectations:
 - optional `streamlit` for the cockpit
 - no committed secrets or `.env` files are required for the current example
 
-## 7. Testing and SIT
+## 10. Testing and SIT
 
 Automated tests:
 
 - unit tests under `tests/unit/`
 - integration and SIT coverage under `tests/integration/`
 
-Housekeeping SIT commands run on 2026-05-18:
+Current SIT commands:
 
 ```bash
 PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m unittest discover -s tests
@@ -113,13 +199,14 @@ PYTHONDONTWRITEBYTECODE=1 .venv/bin/python main.py build --source examples/busin
 PYTHONDONTWRITEBYTECODE=1 .venv/bin/python main.py certify --package outputs/business_banking_fraud_detection
 ```
 
-Observed results:
+Current observed state:
 
-- tests passed
-- build passed
-- certify completed and returned `not_certifiable` with `validation_status: passed`
+- tests pass
+- build passes
+- certify completes successfully
+- the default fraud package still returns `not_certifiable` with `validation_status: passed`
 
-## 8. Deployment / Execution
+## 11. Deployment / Execution
 
 Local execution:
 
@@ -131,7 +218,7 @@ Current deployment model:
 - semantic package generation is local filesystem output only
 - no warehouse deployment, CI/CD release, or platform adapter deployment is implemented in this repo yet
 
-## 9. Governance / Operational Notes
+## 12. Governance / Operational Notes
 
 - certification is deterministic and local; it does not represent external business sign-off
 - the default package intentionally remains `not_certifiable` because unresolved business approval and synthetic-label issues are preserved
@@ -139,6 +226,6 @@ Current deployment model:
 - generated outputs are ignored by Git via `.gitignore`
 - sample data is local fixture data only, not production banking data
 
-## 10. Known Gaps
+## 13. Known Gaps
 
 See [issues-pending-review.md](/Users/emilygao/LocalDocuments/Projects/semantic_foundry/design/issues-pending-review.md:1).
