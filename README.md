@@ -1,19 +1,58 @@
 # Semantic_Foundry
 
-MVP scaffold for the Semantic_Foundry accelerator described in [design/semantic_foundry_detailed_design.md](/Users/emilygao/LocalDocuments/Projects/semantic_foundry/design/semantic_foundry_detailed_design.md:1).
+## Overview
 
-The current implementation follows the design doc's Phase 1 roadmap:
+Semantic_Foundry is a Python accelerator that turns a business use case, source code, and sample data into a governed semantic package.
 
-- CLI skeleton
-- source inventory scanner
-- Python AST logic miner
-- deterministic semantic artefact generation
-- semantic SQL and certification report publishing
-- integration tests over a business banking fraud fixture
+The current implementation focuses on the `business_banking_fraud_detection` example and produces:
 
-## Quick Start
+- semantic catalogues
+- signal and metric catalogues
+- DQ and policy validation outputs
+- generated semantic SQL
+- certification artefacts
+- a Streamlit review cockpit for approval and publish workflow
 
-Create or activate your virtualenv, then run:
+## Architecture Summary
+
+The repository is organized around a deterministic build pipeline:
+
+1. load use case input
+2. scan source files and mine Python logic
+3. generate semantic, signal, metric, policy, and AI artefacts
+4. run deterministic validation gates
+5. publish a reviewable semantic package
+6. support review and publish updates through the cockpit
+
+See [design/architecture.md](/Users/emilygao/LocalDocuments/Projects/semantic_foundry/design/architecture.md:1) for the full system view.
+
+## Repository Structure
+
+```text
+semantic_foundry/
+├── semantic_foundry/         # Python package code
+├── examples/                 # Fraud fixture and use case
+├── tests/                    # Unit and integration/SIT coverage
+├── design/                   # Architecture, design, and review docs
+├── outputs/                  # Generated semantic packages
+├── main.py                   # CLI entry point
+└── review_cockpit.py         # Streamlit review cockpit entry point
+```
+
+## Setup
+
+Create or activate a Python 3.14 virtual environment, then install runtime dependencies as needed.
+
+For the review cockpit, install Streamlit in the active environment:
+
+```bash
+python -m pip install setuptools wheel
+python -m pip install streamlit
+```
+
+## Run
+
+Build the example semantic package:
 
 ```bash
 python main.py build \
@@ -22,106 +61,61 @@ python main.py build \
   --target generic_sql
 ```
 
-The build writes the MVP package to:
-
-```text
-outputs/business_banking_fraud_detection/
-```
-
-## CLI
+Inspect discovery output:
 
 ```bash
-python main.py discover --source examples/business_banking_fraud/source --use-case examples/business_banking_fraud/use_case.yaml
-python main.py build --source examples/business_banking_fraud/source --use-case examples/business_banking_fraud/use_case.yaml --target generic_sql
+python main.py discover \
+  --source examples/business_banking_fraud/source \
+  --use-case examples/business_banking_fraud/use_case.yaml
+```
+
+Check certification state:
+
+```bash
 python main.py certify --package outputs/business_banking_fraud_detection
 ```
 
-`discover` now returns a structured discovery report with:
+Launch the review cockpit:
 
-- raw code-mining output under `discovery`
-- `semantic_layer_candidates`
-- `signal_layer_candidates`
-- `alert_layer_candidates`
-- `governance_context`
-
-## Generated Output
-
-The MVP build produces:
-
-```text
-package_manifest.yaml
-use_case.yaml
-discovery_report.json
-semantic_catalogue.yaml
-signal_catalogue.yaml
-metric_catalogue.yaml
-dq_rules.yaml
-policy_rules.yaml
-lineage.yaml
-semantic_views.sql
-ai_context_cards.yaml
-evaluation_questions.yaml
-certification_report.md
-01_semantic_catalogue/
-  glossary.yaml
-  entities.yaml
-  relationships.yaml
-02_signal_catalogue/
-  signals.yaml
-03_prediction_catalogue/
-  predictions.yaml
-04_evaluation_metric_catalogue/
-  metrics.yaml
-05_governance_controls/
-  dq_rules.yaml
-  dq_validation.yaml
-  policies.yaml
-  policy_validation.yaml
-  issue_register.yaml
-06_ai_consumption/
-  ai_context_cards.yaml
-07_delivery_pack/
-  semantic_manifest.yaml
-  semantic_views.sql
-  certification_report.md
+```bash
+python -m streamlit run review_cockpit.py
 ```
 
-## Tests
+## Test / SIT
+
+Primary automated test command:
 
 ```bash
 python -m unittest discover -s tests
 ```
 
-Current test split:
-
-- Unit tests cover source inventory, Python AST logic mining, YAML/loading, and artefact validation.
-- SIT covers the CLI-level `discover -> build -> certify` workflow against the fraud fixture.
-
-## Review Cockpit
-
-The repo now includes a lightweight Streamlit review cockpit that loads a built package for:
-
-- asset review and approval
-- owner updates
-- issue capture and resolution
-- package publish with refreshed certification artefacts
-
-Install the optional review dependency and run:
+Practical SIT / smoke flow:
 
 ```bash
-python -m pip install -e .[review]
-streamlit run review_cockpit.py
+python main.py build \
+  --source examples/business_banking_fraud/source \
+  --use-case examples/business_banking_fraud/use_case.yaml \
+  --target generic_sql
+
+python main.py certify --package outputs/business_banking_fraud_detection
 ```
 
-By default the cockpit opens:
+## Configuration
 
-```text
-outputs/business_banking_fraud_detection
-```
+Key project inputs:
 
-It refreshes:
+- use case YAML: `examples/business_banking_fraud/use_case.yaml`
+- sample source data and Python logic: `examples/business_banking_fraud/source/`
+- packaging config: `pyproject.toml`
 
-- `07_delivery_pack/certification_report.md`
-- `07_delivery_pack/semantic_manifest.yaml`
-- `05_governance_controls/review_approvals.yaml`
-- `07_delivery_pack/publish_log.yaml`
+No secret values should be committed into the repository.
+
+## Documentation
+
+- Architecture: [design/architecture.md](/Users/emilygao/LocalDocuments/Projects/semantic_foundry/design/architecture.md:1)
+- Semantic package design: [design/semantic_foundry_semantic_package_detailed_design.md](/Users/emilygao/LocalDocuments/Projects/semantic_foundry/design/semantic_foundry_semantic_package_detailed_design.md:1)
+- Pending review issues: [design/issues-pending-review.md](/Users/emilygao/LocalDocuments/Projects/semantic_foundry/design/issues-pending-review.md:1)
+
+## Current Status
+
+The build and validation pipeline is operational and the review cockpit is present, but the default fraud package is still intentionally `not_certifiable` because business approvals and synthetic-label caveats remain open for review.
